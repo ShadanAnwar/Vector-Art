@@ -1,0 +1,9 @@
+tensorflow
+Flask
+send_file
+cv2
+huggingface_hub
+PIL
+requests
+io
+numpy
