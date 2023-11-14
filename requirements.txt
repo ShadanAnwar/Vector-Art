@@ -1,6 +1,6 @@
+Flask = 3.0.0
 Gunicorn
 tensorflow
-Flask
 send_file
 cv2
 huggingface_hub
