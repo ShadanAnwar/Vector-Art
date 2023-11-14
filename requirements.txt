@@ -1,4 +1,4 @@
-Flask == 3.0.0
+Flask == 2.2.2
 Gunicorn
 tensorflow
 send_file
