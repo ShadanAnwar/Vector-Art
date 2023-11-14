@@ -41,7 +41,7 @@ model_path = snapshot_download("sayakpaul/whitebox-cartoonizer")
 loaded_model = tf.saved_model.load(model_path)
 concrete_func = loaded_model.signatures["serving_default"]
 
-@app.route("/get_image")
+@app.route("/")
 def get_image():
     try:
         # Get image URL from the request
