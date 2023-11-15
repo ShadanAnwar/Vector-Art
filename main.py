@@ -7,7 +7,6 @@ from PIL import Image
 import requests
 import io
 
-app = Flask(__name__)
 
 def resize_crop(image):
     h, w, c = np.shape(image)
@@ -41,34 +40,25 @@ model_path = snapshot_download("sayakpaul/whitebox-cartoonizer")
 loaded_model = tf.saved_model.load(model_path)
 concrete_func = loaded_model.signatures["serving_default"]
 
-@app.route("/")
-def get_image():
-    try:
-        # Get image URL from the request
-        image_url = "https://imgs.search.brave.com/ve9zOmt8jG67ESezebQADrKOm1DCxY-mz-EbB8eu6Co/rs:fit:500:0:0/g:ce/aHR0cHM6Ly9idXJz/dC5zaG9waWZ5Y2Ru/LmNvbS9waG90b3Mv/d2luZGluZy10cmVl/LXRvd2Vycy1vdmVy/LWxhbmRzY2FwZS5q/cGc_d2lkdGg9MTAw/MCZmb3JtYXQ9cGpw/ZyZleGlmPTAmaXB0/Yz0w"
-        
-        # Download and preprocess image.
-        image = download_image(image_url)
-        preprocessed_image = preprocess_image(image)
+# Get image URL from the request
+image_url = "https://imgs.search.brave.com/ve9zOmt8jG67ESezebQADrKOm1DCxY-mz-EbB8eu6Co/rs:fit:500:0:0/g:ce/aHR0cHM6Ly9idXJz/dC5zaG9waWZ5Y2Ru/LmNvbS9waG90b3Mv/d2luZGluZy10cmVl/LXRvd2Vycy1vdmVy/LWxhbmRzY2FwZS5q/cGc_d2lkdGg9MTAw/MCZmb3JtYXQ9cGpw/ZyZleGlmPTAmaXB0/Yz0w"
 
-        # Run inference.
-        result = concrete_func(preprocessed_image)["final_output:0"]
+# Download and preprocess image.
+image = download_image(image_url)
+preprocessed_image = preprocess_image(image)
 
-        # Post-process the result and convert it to bytes.
-        output = (result[0].numpy() + 1.0) * 127.5
-        output = np.clip(output, 0, 255).astype(np.uint8)
-        output = cv2.cvtColor(output, cv2.COLOR_BGR2RGB)
-        output_image = Image.fromarray(output)
-        
-        # Convert the image to bytes
-        img_byte_array = io.BytesIO()
-        output_image.save(img_byte_array, format="PNG")
-        img_byte_array = img_byte_array.getvalue()
+# Run inference.
+result = concrete_func(preprocessed_image)["final_output:0"]
 
-        # Return the image as a Flask response
-        return send_file(io.BytesIO(img_byte_array), mimetype="image/png")
+# Post-process the result and convert it to bytes.
+output = (result[0].numpy() + 1.0) * 127.5
+output = np.clip(output, 0, 255).astype(np.uint8)
+output = cv2.cvtColor(output, cv2.COLOR_BGR2RGB)
+output_image = Image.fromarray(output)
 
-    except Exception as e:
-        print("Error:", e)
-        return "lmao"
+# Convert the image to bytes
+img_byte_array = io.BytesIO()
+output_image.save(img_byte_array, format="PNG")
+img_byte_array = img_byte_array.getvalue()
+
 
